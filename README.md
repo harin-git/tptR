@@ -1,7 +1,7 @@
 # Timbre Perception Test (TPT)
-
-This is an R package for running TPT, implemented using psychTestR.
 The TPT is a test to measure an individual's ability on timbre perception.
+This R package is for running the TPT locally and it is implmented using [psychTestR](https://github.com/pmcharrison/psychTestR), a package for 
+designing and running psychology experiments with R.
 
 ## Citation
 
@@ -18,7 +18,7 @@ library(tptR)
 library(psychTestR)
 if (!require(devtools)) install.packages("devtools")
 x <- devtools::session_info()
-x$packages[x$packages$package %in% c("mpt", "psychTestR"), ]
+x$packages[x$packages$package %in% c("tptR", "psychTestR"), ]
 ```
 
 ## Standalone Installation (local use)
@@ -34,4 +34,22 @@ x$packages[x$packages$package %in% c("mpt", "psychTestR"), ]
 4. Install the tptR:
 
 `devtools::install_github('harin-git/tptR')`
+
+## Usage
+
+The package comes with two functions
+
+1. To run TPT experiment locally 
+
+``` r
+library(tptR)
+tptR::TPT_test(password, researcher_email)
+```
+
+2. For performing posterior analyses
+
+``` r
+library(tptR)
+tptR::TPT_analyse(data_path, bin_scoring = TRUE)
+```
 
