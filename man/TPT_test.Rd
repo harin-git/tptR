@@ -17,6 +17,3 @@ Run TPT as a standalone (i.e. run locally without hosting on a server).
 Running this locally will create a local directory called 'output' and
 store participant's response there.
 }
-\examples{
-TPT_test(password = "test1234", researcher_email = "hlee@cbs.mpg.de")
-}
