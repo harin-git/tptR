@@ -94,6 +94,9 @@ sliderJS <- function(trialName) {
       audio.pause();
       audio = new Audio(url);
       audio.play();
+      if(document.getElementByID('targetAudio').clicked == true){
+        audio.stop();
+      }
     }
 
     export_answer(slider.value);
@@ -213,13 +216,7 @@ makeTestPage <- function(trialName, blockName){
             type = 'button',
             'Target Sound',
             class = "button"
-          ),
-          shiny::tags$script(
-            shiny::HTML("
-              var target = document.getElementById('targetAudio')
-              document.addEventListener('keydown', function(e){if(e.which == 84){target.play()}})"
-            )
-          ),
+          )
         ),
         shiny::tags$br(),
         shiny::tags$div(
@@ -376,45 +373,75 @@ sendCode <- psychTestR::finish_test_and_give_code("hlee@cbs.mpg.de")
 end <-  psychTestR::join(participant, sendCode)
 
 
-### Feedback ----
-TPT_original <- read.csv("data-raw/TPT_rawDistance.csv")[ ,2:14]
-TPT_original_mean <- rowMeans(TPT_original)
-TPT_quantile <- quantile(TPT_original_mean, probs = seq(0,1, 0.01))
-TPT_percentile <- ecdf(TPT_original_mean)
+## Feedback ----
+# This function transforms raw participant score to bin scores
+bin_transform <- function(participant_abs_dist, target_value){
+  max.dist <- NULL
+  for(i in 1:length(participant_abs_dist)){
+    if(target_value[i]<50){
+      max.dist[i] <- 101 - target_value[i]
+      participant_abs_dist[i] <- log((participant_abs_dist[i]+1) / max.dist[i] ) %/% (log(max.dist)/5)
+    }
+    else{
+      max.dist[i] <- 1 + target_value[i]
+      participant_abs_dist[i] <- log((participant_abs_dist[i]+1) / max.dist[i] ) %/% (log(max.dist)/5)
+    }
+  }
+  abs(participant_abs_dist)
+}
+
+# Function to make curve graph
+feed_plot <- function(score){
+  q <- ggplot2::ggplot(data.frame(x = c(0, 100)), ggplot2::aes(x)) +
+    ggplot2::stat_function(fun = dnorm, args = list(mean = 50, sd = 20)) +
+    ggplot2::stat_function(
+      fun = dnorm,
+      args = list(mean = 50, sd = 20),
+      xlim = c(score, 100),
+      fill = "lightblue4",
+      geom = "area") +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank()) +
+    ggplot2::labs(x = "Score (out of 100)", y = "")
+  plotly::ggplotly(q, width = 600, height = 450)
+}
 
 score_calculation <-  psychTestR::code_block(function(state, ...) {
   trial_names <- c(paste0("env", 1:6), paste0("flux", 1:6), paste0("cent", 1:6))
   new_target_values <- c(78, 22, 6, 62, 38, 94, 38, 62, 94, 78, 22, 6, 22, 78, 38, 6, 94, 62)
 
-  response <- purrr::map_dbl(trial_names, get_local, state)
+  response <- purrr::map_dbl(trial_names, psychTestR::get_local, state)
 
   participant_distance_score <- abs(response - new_target_values)
-  participants_distance_mean <- signif(mean(participant_distance_score), digits = 2)
-  feedback_score <- signif(100 - participants_distance_mean / 50 * 100, digits = 2)
-  abs_distance_quantile <- signif(TPT_percentile(participants_distance_mean) * 100, digits = 2)
+
+  bin_transformed <- bin_transform(
+    participant_distance_score,
+    new_target_values
+  ) # transforms participants response to bin scores of 0 ~ 5
+
+  mean_bin <- mean(bin_transformed)
+  feedback_score <- signif(mean_bin/5*100, 3) # translate to score out of 100 for feedback
 
   psychTestR::set_local("feedback_score", feedback_score, state)
-  psychTestR::set_local("abs_distance_quantile", abs_distance_quantile, state)
+  psychTestR::save_result(state, "feedback_score", feedback_score)
 })
 
+
 feedback <- psychTestR::join(
-  psychTestR::reactive_page(function(state, ...) {
+  psychTestR::reactive_page(function(state, ...){
+    score <- psychTestR::get_local("feedback_score", state)
     psychTestR::one_button_page(shiny::div(
       shiny::p(
-        "Your score was:",
-        shiny::strong(psychTestR::get_local("feedback_score", state)),
-        " (out of 100)"
+        "Your Timbre Perception Test score is:",
+        shiny::strong(score)
       ),
-      shiny::p(
-        "This places you in the top ",
-        shiny::strong(psychTestR::get_local("abs_distance_quantile", state)),
-        "% percentile of everyone who took this test."
-      ),
-      shiny::p("Well done!")
+      shiny::p("Well done!"),
+      shiny::p(feed_plot(score))
     ))
   }
 ))
-
 
 ## Timeline----
 all_pages <-  psychTestR::join(
