@@ -20,92 +20,99 @@ audio <- "https://hleetestbuck.s3.eu-central-1.amazonaws.com/TPT_resources/audio
 image <- "https://hleetestbuck.s3.eu-central-1.amazonaws.com/TPT_resources/image/"
 
 #This is the CSS styler for the 'target sound' button
-target_button_style <- shiny::tags$style(
+button_style <- shiny::tags$style(
   ".button {
     display: inline-block;
     padding: 15px 25px;
-    font-size: 20px;
+    font-size: 16px;
     cursor: pointer;
     text-align: center;
     text-decoration: none;
     outline: none;
-    color: #fff;
-    background-color: #ffa500;
-    border: none;
+    color: black;
+    background-color: #white;
+    border: 2px solid #B2B2B2;
     border-radius: 15px;
     box-shadow: 0 9px #999;
+    width: 180px;
+    margin: 4px 10px;
   }
 
   .button:hover {
-  	background-color: #ffd280;
+    background-color: #ffa500;
+    color: white;
+    border: 2px solid #ffa500;
+  }
+
+  .active {
+    position: relative;
+    animation: glowing 2000ms 1;
   }
 
   @keyframes glowing {
     0% {
       background-color: #ffa500;
-      box-shadow: 0 0 5px #ffa500;
-    }
-    16% {
-      background-color: #ffd280;
-      box-shadow: 0 0 20px #ffa500;
-    }
-    32% {
-      background-color: #ffa500;
-      box-shadow: 0 0 5px #ffa500;
-    }
-    48% {
-      background-color: #ffa500;
-      box-shadow: 0 0 5px #ffa500;
-    }
-    64% {
-      background-color: #ffd280;
-      box-shadow: 0 0 20px #ffa500;
+      box-shadow: 0 5px ##999;
+      border: 2px solid #ffa500;
+      color: white;
     }
     80% {
       background-color: #ffa500;
-      box-shadow: 0 0 5px #ffa500;
+      box-shadow: 0 0 30px #ffa500;
+      border: 2px solid #ffa500;
+      color: white;
+      transform: translateY(4px);
     }
-  }
-
-  .button:active {
-    box-shadow: 0 5px #666;
-    transform: translateY(4px);
-    animation: glowing 2400ms;
-  }
-  "
+  }"
 )
 
 # This is the JS script for moveable slider that triggers sound
 sliderJS <- function(trialName) {
   shiny::HTML(
     sprintf(
-    "var audio = new Audio();
+    "var yourAudio = new Audio();
     var slider = document.getElementById('slider');
 
     function export_answer(value) {
       Shiny.onInputChange('slider', value);
     }
 
-    function play_audio() {
+    function playYourAudio() {
       console.log('hi');
       var value = slider.value;
       export_answer(value);
+      document.getElementById('targetAudio').pause();
+      document.getElementById('targetAudio').currentTime = 0;
       var url = '%s' + '_' + value + '.mp3';
-      audio.pause();
-      audio = new Audio(url);
-      audio.play();
-      if(document.getElementByID('targetAudio').clicked == true){
-        audio.stop();
-      }
+      yourAudio.pause();
+      yourAudio = new Audio(url);
+      yourAudio.play();
+      let elem = document.getElementById('yourSound');
+      elem.classList.remove('active');
+      elem.classList.add('active');
+      setTimeout(function () {
+        elem.classList.remove('active');
+      }, 2000);
+    }
+
+    function playTargetAudio(elem) {
+      yourAudio.pause();
+      document.getElementById('targetAudio').currentTime = 0;
+      document.getElementById('targetAudio').play();
+      elem.classList.remove('active');
+      elem.classList.add('active');
+      setTimeout(function () {
+        elem.classList.remove('active');
+      }, 2000);
     }
 
     export_answer(slider.value);
-    slider.addEventListener('change', play_audio)
+    slider.addEventListener('change', playYourAudio);
+    yourSound.addEventListener('click', playYourAudio);
     ", paste0(audio, trialName)
     )
   )
 }
-
 
 ## Functions----
 makeDemoPage <- function(blockName, trialName, targetValue){
@@ -113,23 +120,27 @@ makeDemoPage <- function(blockName, trialName, targetValue){
     psychTestR::page(
       ui =
         shiny::tags$div(
-          shiny::tags$head(target_button_style),
+          shiny::tags$head(button_style),
           shiny::tags$script(sliderJS(trialName)),
           shiny::tags$div(
             shiny::tags$strong(sprintf("Practice Trial - %s", blockName)),
             shiny::br(),
             shiny::tags$audio(
-              id = 'demoAudio',
+              id = 'targetAudio',
               src = paste0(audio, 'demo_', trialName, '.mp3'),
               type = "audio/wav"
             ),
             shiny::br(),
             shiny::tags$button(
-              onclick = "document.getElementById('demoAudio').play()",
+              onclick = "playTargetAudio(this)",
               type = 'button',
               'Target Sound',
-              class = 'button'
-            )
+              class = 'button button1'),
+            shiny::tags$button(
+              id = 'yourSound',
+              type = 'button',
+              'Your Sound',
+              class = 'button button2')
           ),
           shiny::br(),
           shiny::tags$div(
@@ -202,21 +213,25 @@ makeTestPage <- function(trialName, blockName){
     ui =
       shiny::tags$div(
         shiny::tags$div(
-          shiny::tags$head(target_button_style),
+          shiny::tags$head(button_style),
+          shiny::tags$script(sliderJS(trialName)),
           shiny::tags$strong(blockName),
           shiny::tags$br(),
           shiny::tags$audio(
             id = 'targetAudio',
             src = paste0(audio, trialName, '.mp3'),
-            type = 'audio/wav'
-          ),
+            type = 'audio/wav'),
           shiny::tags$br(),
           shiny::tags$button(
-            onclick = "document.getElementById('targetAudio').play()",
+            onclick = "playTargetAudio(this)",
             type = 'button',
             'Target Sound',
-            class = "button"
-          )
+            class = 'button button1'),
+          shiny::tags$button(
+            id = 'yourSound',
+            type = 'button',
+            'Your Sound',
+            class = 'button button2')
         ),
         shiny::tags$br(),
         shiny::tags$div(
@@ -232,12 +247,11 @@ makeTestPage <- function(trialName, blockName){
         ),
         shiny::hr(),
         psychTestR::trigger_button("next", "Submit"),
-        shiny::tags$script(sliderJS(trialName)),
       ),
     get_answer = function(input, ...)
       as.numeric(input$slider),
     save_answer = TRUE,
-    label = trialName,
+    label = paste0("raw_", trialName),
     on_complete = function(answer, state, ...) {
       psychTestR::set_local(trialName, as.numeric(answer), state)
     }
@@ -332,7 +346,7 @@ page_after_block <- purrr::map(
   c(
     "Well done. You completed the first Block. Let's move on to the second one!",
     "You completed the second Block. One more to go!",
-    "Fantastic! You now completed all the Blocks. Before we finish, we'll ask you few questions about your background."
+    "Fantastic! You now completed all the Blocks."
   ),
   psychTestR::one_button_page
 )
@@ -421,17 +435,33 @@ score_calculation <-  psychTestR::code_block(function(state, ...) {
     new_target_values
   ) # transforms participants response to bin scores of 0 ~ 5
 
-  mean_bin <- mean(bin_transformed)
-  feedback_score <- signif(mean_bin/5*100, 3) # translate to score out of 100 for feedback
+  # calculate mean bin scores
+  env_mean <- mean(bin_transformed[1:6])
+  flux_mean <- mean(bin_transformed[7:12])
+  cent_mean <- mean(bin_transformed[13:18])
+  general_mean <- mean(bin_transformed)
+  general_score <- signif(general_mean/5*100, 3)
 
-  psychTestR::set_local("feedback_score", feedback_score, state)
-  psychTestR::save_result(state, "feedback_score", feedback_score)
+  for (i in 1:length(trial_names)) {
+    psychTestR::save_result(state, paste0("abs_", trial_names[i]), participant_distance_score[i])
+  } # save absolute distance scores with a prefix 'abs_'
+
+  for (i in 1:length(trial_names)) {
+    psychTestR::save_result(state, paste0("bin_", trial_names[i]), bin_transformed[i])
+  } # save bin scores with a prefix 'bin_'
+
+  # save mean bin scores for each block & across blocks
+  psychTestR::save_result(state, "tpt_env_score", signif(env_mean/5*100, 3))
+  psychTestR::save_result(state, "tpt_flux_score", signif(flux_mean/5*100, 3))
+  psychTestR::save_result(state, "tpt_cent_score", signif(cent_mean/5*100, 3))
+
+  psychTestR::set_local("tpt_general_score", general_score, state)
+  psychTestR::save_result(state, "tpt_general_score", general_score)
 })
-
 
 feedback <- psychTestR::join(
   psychTestR::reactive_page(function(state, ...){
-    score <- psychTestR::get_local("feedback_score", state)
+    score <- psychTestR::get_local("tpt_general_score", state)
     psychTestR::one_button_page(shiny::div(
       shiny::p(
         "Your Timbre Perception Test score is:",
@@ -445,7 +475,7 @@ feedback <- psychTestR::join(
 
 ## Timeline----
 all_pages <-  psychTestR::join(
-  instructions,
+  #instructions,
   envBlock,
   fluxBlock,
   centBlock,
