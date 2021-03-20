@@ -1,18 +1,28 @@
-#' TPT_test
+#' TPT_standalone
 #'
 #' Run TPT as a standalone (i.e. run locally without hosting on a server).
-#' Running this locally will create a local directory called 'output' and
+#' Running this locally will create a local directory folder called 'output' and
 #' store participant's response there.
 #'
-#' @param password Create a password to login as an admin
-#' @param researcher_email The researcher's email to be displayed. Default set to the
-#' developer's email
-
+#' @param password Create a password for logging in as an admin.
+#' @param researcher_email The researcher's email to be displayed. Default set to the developer's email.
 #' @export
-TPT_test <- function(password, researcher_email = "hlee@cbs.mpg.de"){
+TPT_standalone <- function(password, researcher_email = "hlee@cbs.mpg.de"){
   psychTestR::make_test(elts = all_pages,
                         opt = tpt_admin(password, researcher_email = researcher_email))
 }
+
+## Testing options----
+tpt_admin <- function(password, researcher_email){
+  psychTestR::test_options(
+    title = 'Timbre Perception Test (TPT)',
+    admin_password = password,
+    researcher_email = "hlee@cbs.mpg.de",
+    theme = shinythemes::shinytheme("united"),
+    logo = "https://s3-eu-west-1.amazonaws.com/media.gold-msi.org/misc/img/logos/longgold_logo_transparent.png",
+    logo_width = "200px",
+    logo_height = "50px")}
+
 
 ## Initialize----
 # AWS S3 buckets where audio and images are stored
@@ -114,7 +124,7 @@ sliderJS <- function(trialName) {
   )
 }
 
-## Functions----
+## Make Page Functions----
 makeDemoPage <- function(blockName, trialName, targetValue){
   psychTestR::join(
     psychTestR::page(
@@ -259,11 +269,12 @@ makeTestPage <- function(trialName, blockName){
 }
 
 ## Instructions----
-landing <- psychTestR::one_button_page(shiny::div(
-  shiny::tags$h3("Do you have good ears for discriminating sounds?"),
-  shiny::hr(),
-  shiny::p("This test examines your ability to match one sound to another."),
-  shiny::p("Take the test and receive a score at the end!")
+landing <- psychTestR::one_button_page(
+  shiny::div(
+    shiny::tags$h3("Do you have good ears for discriminating sounds?"),
+    shiny::tags$hr(),
+    shiny::p("This test examines your ability to match one sound to another"),
+    shiny::p("Take the test and receive a score at the end!")
   ),
   button_text = "Begin Test"
 )
@@ -298,17 +309,11 @@ instruct1 <- psychTestR::one_button_page(
   shiny::div(
     shiny::tags$h3("Instructions"),
     shiny::hr(),
-    shiny::tags$li("When you begin the test, you will hear a",shiny::tags$strong("taget sound")),
-    shiny::tags$li("You can play the target sound anytime by clicking it"),
-    shiny::tags$li("The slider bar below allows you to produce", shiny::tags$strong("your own sound")),
-    shiny::tags$li("Your own sound will change as you move the slider"),
-    shiny::tags$li(
-      "Your task is to match",
-      shiny::tags$strong("your sound"),
-      "to the",
-      shiny::tags$strong("target sound"),
-      "as close as possible"
-    ),
+    shiny::tags$li(shiny::tags$strong("Taget Sound"), "is fixed and can be played anytime by clicking it."),
+    shiny::tags$li(shiny::tags$strong("Your Sound"), " changes when you move the slider. You can click to hear the change you made."),
+    shiny::tags$li("At anypoint, whichever sound that is playing will be indicated with an orange glow."),
+    shiny::tags$li("Your task is to fine-tune", shiny::tags$strong("Your Sound"),
+                   "to match the", shiny::tags$strong("Target Sound.")),
     shiny::br(),
     shiny::tags$img(
       src = paste0(image, "instruction1.png"),
@@ -407,9 +412,9 @@ bin_transform <- function(participant_abs_dist, target_value){
 # Function to make curve graph
 feed_plot <- function(score){
   q <- ggplot2::ggplot(data.frame(x = c(0, 100)), ggplot2::aes(x)) +
-    ggplot2::stat_function(fun = dnorm, args = list(mean = 50, sd = 20)) +
+    ggplot2::stat_function(fun = stats::dnorm, args = list(mean = 50, sd = 20)) +
     ggplot2::stat_function(
-      fun = dnorm,
+      fun =  stats::dnorm,
       args = list(mean = 50, sd = 20),
       xlim = c(score, 100),
       fill = "lightblue4",
@@ -475,7 +480,7 @@ feedback <- psychTestR::join(
 
 ## Timeline----
 all_pages <-  psychTestR::join(
-  #instructions,
+  instructions,
   envBlock,
   fluxBlock,
   centBlock,
@@ -484,14 +489,3 @@ all_pages <-  psychTestR::join(
   end,
   psychTestR::final_page('END')
 )
-
-## Testing options----
-tpt_admin <- function(password, researcher_email){
-  psychTestR::test_options(
-  title = 'Timbre Perception Test (TPT)',
-  admin_password = password,
-  researcher_email = "hlee@cbs.mpg.de",
-  theme = shinythemes::shinytheme("united"),
-  logo = "https://s3-eu-west-1.amazonaws.com/media.gold-msi.org/misc/img/logos/longgold_logo_transparent.png",
-  logo_width = "200px",
-  logo_height = "50px")}

@@ -1,7 +1,7 @@
 # Timbre Perception Test (TPT)
 The TPT is a test to measure an individual's ability on timbre perception.
 This R package is for running the TPT locally and it is implmented using [psychTestR](https://github.com/pmcharrison/psychTestR), a package for 
-designing and running psychology experiments with R.
+designing and running psychological experiments with R.
 
 ## Citation
 
@@ -37,19 +37,29 @@ x$packages[x$packages$package %in% c("tptR", "psychTestR"), ]
 
 ## Usage
 
-The package comes with two functions
-
-1. To run TPT experiment locally 
+You can simply run experiments locally by setting the admin password and researcher email to display to the participants.
 
 ``` r
 library(tptR)
-tptR::TPT_test(password, researcher_email)
+tptR::TPT_standalone(password, researcher_email)
+
+# For example:
+tptR::TPT_standalone("1234", "john@gmail.com")
 ```
 
-2. For performing posterior analyses
+## Interpreting results
+Once participants complete the experiment locally, the data is stored in the "output" folder. Inside the "output/results" you will find all recorded sessions.
 
-``` r
-library(tptR)
-tptR::TPT_analyse(data_path, bin_scoring = TRUE)
-```
+Participant's performance scores are recorded in three ways:
+
+1. Column names starting with "raw ..." shows the raw slider values the participant positioned for the particular trial.
+
+2. Column names starting with "abs ..." shows the absolute values of *raw value - target value* (i.e. absolute slider distance from the target position).
+
+3. Column names starting with "bin ..." shows the calculated bin scores out of 6 very similar to the method discussed in the paper. We recommend using these bin scores rather than absolute values.
+
+Aggregated TPT scores:
+
+> For convenience, the results table includes mean scores for each of the three testing blocks (e.g. tpt_env_score). These are aggregated based on the bin scores and then converted into scores out of 100. The general score (i.e. tpt_general_score) is also reported by taking the mean across all blocks.
+
 
