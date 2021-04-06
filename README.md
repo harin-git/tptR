@@ -1,7 +1,8 @@
 # Timbre Perception Test (TPT)
 The TPT is a test to measure an individual's ability on timbre perception.
-This R package is for running the TPT locally and it is implmented using [psychTestR](https://github.com/pmcharrison/psychTestR), a package for 
+This R package is for running the TPT locally and it is implemented using [psychTestR](https://github.com/pmcharrison/psychTestR), a package for 
 designing and running psychological experiments with R.
+![tpt-gif](https://github.com/harin-git/tptR/blob/main/images/tpt_gif.gif)
 
 ## Citation
 
@@ -50,7 +51,12 @@ tptR::TPT_standalone("1234", "john@gmail.com")
 tptR::TPT_demo()
 ```
 
-## Interpreting results
+## Feedback
+At the end of the experiment, participant will receive a feedback score out of 100.
+
+<img src="https://github.com/harin-git/tptR/blob/main/images/tpt_feedback_example.png" width="500" height="370">
+
+## Interpreting Results
 Once participants complete the experiment locally, the data is stored in the "output" folder. Inside the "output/results" you will find all recorded sessions.
 
 Participant's performance scores are recorded in three ways:
