@@ -4,7 +4,7 @@ Title: Timbre Perception Test (TPT)
 Version: 0.1.0
 Author: Harin Lee
 Maintainer: Harin Lee <hlee@cbs.mpg.de>
-Description: Online implementation of the Timbre Perception Test (TPT) developed by Harin Lee & Daniel Müllensiefen. [Citation] Lee, H., & Müllensiefen, D. (2020). The Timbre Perception Test (TPT): A new interactive musical assessment tool to measure timbre perception ability. Attention, Perception, & Psychophysics, 82(7), 3658–3675. https://doi.org/10.3758/s13414-020-02058-3
+Description: Online implementation of the Timbre Perception Test (TPT) developed by Harin Lee & Daniel Müllensiefen. 
 Imports:
     psychTestR (>= 2.8.0),
     shiny (>= 1.3.2),

@@ -4,13 +4,12 @@
 \alias{TPT_standalone}
 \title{TPT_standalone}
 \usage{
-TPT_standalone(password, researcher_email = "hlee@cbs.mpg.de")
+TPT_standalone(password, your_email = "hlee@cbs.mpg.de")
 }
 \arguments{
-\item{password}{Create a password to login as an admin}
+\item{password}{Create a password for logging in as an admin.}
 
-\item{researcher_email}{The researcher's email to be displayed. Default set to the
-developer's email}
+\item{your_email}{The researcher's email to be displayed. Replace with your email address.}
 }
 \description{
 Run TPT as a standalone (i.e. run locally without hosting on a server).

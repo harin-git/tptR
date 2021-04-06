@@ -2,6 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-output/*
 .DS_Store
 .Rbuildignore

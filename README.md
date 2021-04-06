@@ -41,10 +41,13 @@ You can simply run experiments locally by setting the admin password and researc
 
 ``` r
 library(tptR)
-tptR::TPT_standalone(password, researcher_email)
+tptR::TPT_standalone(password, your_email)
 
 # For example:
 tptR::TPT_standalone("1234", "john@gmail.com")
+
+# You can try a quick demo with no input arguments
+tptR::TPT_demo()
 ```
 
 ## Interpreting results
