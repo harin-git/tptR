@@ -3,8 +3,7 @@
 \docType{data}
 \name{audio}
 \alias{audio}
-\title{Instructions & AWS S3 directory
-This directory should be changed to where it should be hosted}
+\title{This directory should be changed to where it should be hosted}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -12,7 +11,6 @@ An object of class \code{character} of length 1.
 audio
 }
 \description{
-Instructions & AWS S3 directory
 This directory should be changed to where it should be hosted
 }
 \keyword{datasets}

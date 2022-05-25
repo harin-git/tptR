@@ -2,17 +2,53 @@
 % Please edit documentation in R/tpt_standalone.R
 \name{TPT_standalone}
 \alias{TPT_standalone}
-\title{TPT_standalone}
+\title{#' Standalone TPT}
 \usage{
-TPT_standalone(password, your_email = "hlee@cbs.mpg.de")
+TPT_standalone(
+  title = NULL,
+  with_feedback = TRUE,
+  with_training = TRUE,
+  with_welcome = TRUE,
+  admin_password = "conifer",
+  researcher_email = "longgold@gold.uc.ak",
+  languages = c("en", "de", "de_f", "it"),
+  dict = tptR::TPT_dict,
+  with_id = FALSE,
+  validate_id = "auto",
+  ...
+)
 }
 \arguments{
-\item{password}{Create a password for logging in as an admin.}
+\item{title}{(Scalar character) Title to display during testing.}
 
-\item{your_email}{The researcher's email to be displayed. Replace with your email address.}
+\item{with_feedback}{(Scalar boolean) Indicates if performance feedback will be given at the end of the test.
+Defaults to TRUE}
+
+\item{with_training}{(Boolean scalar) Defines whether instructions and training are included.
+Defaults to TRUE.}
+
+\item{admin_password}{(Scalar character) Password for accessing the admin panel.}
+
+\item{researcher_email}{(Scalar character)
+If not \code{NULL}, this researcher's email address is displayed
+at the bottom of the screen so that online participants can ask for help.}
+
+\item{languages}{(Character vector)
+Determines the languages available to participants.
+Possible languages include English (\code{"en"}),
+German (informal: \code{"de"} and formal \code{"de_f"}), and Italian (\code{"it"})
+The first language is selected by default}
+
+\item{dict}{The psychTestR dictionary used for internationalisation.}
+
+\item{with_id}{participant ID. Default to FALSE}
+
+\item{validate_id}{(Character scalar or closure) Function for validating IDs or string "auto" for default validation
+which means ID should consist only of  alphanumeric characters.}
+
+\item{...}{Further arguments to be passed to \code{\link{TPT}()}.}
 }
 \description{
-Run TPT as a standalone (i.e. run locally without hosting on a server).
-Running this locally will create a local directory folder called 'output' and
-store participant's response there.
+This function launches a standalone testing session for the TPT
+This can be used for data collection, either in the laboratory or online.
 }

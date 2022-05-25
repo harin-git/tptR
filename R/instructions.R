@@ -1,81 +1,115 @@
 #' Instructions & AWS S3 directory
+#'
+#' @param with_volume_headphone_check page asking to calibrate volume and
+#' a question about audio output device. Default is \code{FALSE}
+#' @param dict The psychTestR dictionary used for internationalisation.
+#' @export
+instructions <- function(with_volume_headphone_check = FALSE,
+                         dict = tptR::TPT_dict){
+
+  landing <- psychTestR::new_timeline(psychTestR::one_button_page(
+    shiny::div(
+      shiny::tags$h3(psychTestR::i18n("TESTNAME")),
+      shiny::tags$hr(),
+      psychTestR::i18n("WELCOME"),
+      shiny::br(),
+      psychTestR::i18n("INTRO"),
+    ),
+    button_text = psychTestR::i18n("BEGIN_TEST")
+  ),
+  dict = dict)
+
+  volumeCheck <-  psychTestR::new_timeline(psychTestR::one_button_page(
+    shiny::div(
+      shiny::tags$h3(psychTestR::i18n("VOLUME_CHECK_HEADER")),
+      shiny::hr(),
+      shiny::p(psychTestR::i18n("VOLUME_CHECK_INSTRUCTIONS")),
+      shiny::br(),
+      shiny::tags$audio(
+        src = paste0(audio, "volume_check.mp3"),
+        type = "audio/mp3",
+        autoplay = TRUE,
+        controls = FALSE
+      ),
+      shiny::p(psychTestR::i18n("VOLUME_ADJUST")),
+      shiny::br(),
+      shiny::p(psychTestR::i18n("RECOMMEND_HEADPHONE")),
+      shiny::hr()
+    ),
+    button_text = psychTestR::i18n("VOLUME_GOOD")
+  ),
+  dict = dict)
+
+  playback <- psychTestR::new_timeline(
+    psychTestR::NAFC_page(
+      "playback_device",
+      psychTestR::i18n("WHICH_DEVICE"),
+      c(psychTestR::i18n("STEREO_SPEAKERS"),
+        psychTestR::i18n("HEADPHONES"),
+        psychTestR::i18n("LAPTOP_SPEAKERS"),
+        psychTestR::i18n("PHONE"))
+    ),
+    dict = dict
+  )
+
+  instruct1 <- psychTestR::new_timeline(psychTestR::one_button_page(
+    shiny::div(
+      shiny::tags$h3(psychTestR::i18n("INSTRUCTIONS")),
+      shiny::hr(),
+      shiny::tags$li(psychTestR::i18n("INSTRUCTIONS_ITEM1")),
+      shiny::tags$li(psychTestR::i18n("INSTRUCTIONS_ITEM2")),
+      shiny::tags$li(psychTestR::i18n("INSTRUCTIONS_ITEM3")),
+      shiny::tags$li(psychTestR::i18n("INSTRUCTIONS_ITEM4")),
+      shiny::br(),
+      shiny::tags$img(
+        src = paste0(image, "instruction1.png"),
+        height = 110,
+        width = 600
+      ),
+    ),
+    button_text = psychTestR::i18n("I_GET_IT")
+  ),
+  dict = dict)
+
+  instruct2 <- psychTestR::new_timeline(
+    psychTestR::one_button_page(
+      shiny::div(
+        shiny::tags$h3(psychTestR::i18n("INSTRUCTIONS")),
+        shiny::hr(),
+        shiny::tags$li(psychTestR::i18n("INSTRUCTIONS2_ITEM1")),
+        shiny::tags$li(psychTestR::i18n("INSTRUCTIONS2_ITEM2")),
+        shiny::tags$li(psychTestR::i18n("INSTRUCTIONS2_ITEM3")),
+
+        shiny::br(),
+        shiny::tags$img(
+          src = paste0(image, "instruction2.png"),
+          height = 120,
+          width = 450
+        ),
+        shiny::hr(),
+        shiny::p(psychTestR::i18n("INSTRUCTIONS2_ITEM4")),
+        shiny::p(psychTestR::i18n("INSTRUCTIONS2_ITEM5"))
+      ),
+      button_text = psychTestR::i18n("BEGIN_PRACTICE")
+    ),
+    dict = dict
+  )
+
+  # return a joined timeline
+  with_volume_heaphone_instruction <- psychTestR::join(
+    landing, volumeCheck, playback, instruct1, instruct2)
+
+  without_volume_heaphone_instruction <- psychTestR::join(
+    landing, instruct1, instruct2)
+
+  if(with_volume_headphone_check == TRUE){
+    return(with_volume_heaphone_instruction)
+  } else {
+    return(without_volume_heaphone_instruction)
+  }
+}
+
+# Initialize the AWS buckets to use
 #' This directory should be changed to where it should be hosted
 audio <- "https://hleetestbuck.s3.eu-central-1.amazonaws.com/TPT_resources/audio/"
 image <- "https://hleetestbuck.s3.eu-central-1.amazonaws.com/TPT_resources/image/"
-
-landing <- psychTestR::one_button_page(
-  shiny::div(
-    shiny::tags$h3("Do you have good ears for discriminating sounds?"),
-    shiny::tags$hr(),
-    shiny::p("This test examines your ability to match one sound to another"),
-    shiny::p("Take the test and receive a score at the end!")
-  ),
-  button_text = "Begin Test"
-)
-
-volumeCheck <- psychTestR::one_button_page(
-  shiny::div(
-    shiny::tags$h3("Volume Check"),
-    shiny::hr(),
-    shiny::p("Let's first make sure that you are comfortable with volume."),
-    shiny::br(),
-    shiny::tags$audio(
-      src = paste0(audio, "volume_check.mp3"),
-      type = "audio/mp3",
-      autoplay = TRUE,
-      controls = FALSE
-    ),
-    shiny::p("Adjust your volume"),
-    shiny::br(),
-    shiny::tags$strong("*We highly recommend that you use headphones to take this test"),
-    shiny::hr()
-  ),
-  button_text = "Volume is Good"
-)
-
-playback <- psychTestR::NAFC_page(
-  "playback_device",
-  "Which device are you using to play the sound?",
-  c("Stereo Speakers", "Headphones", "Laptop Speakers", "Phone")
-)
-
-instruct1 <- psychTestR::one_button_page(
-  shiny::div(
-    shiny::tags$h3("Instructions"),
-    shiny::hr(),
-    shiny::tags$li(shiny::tags$strong("Taget Sound"), "is fixed and can be played anytime by clicking it."),
-    shiny::tags$li(shiny::tags$strong("Your Sound"), " changes when you move the slider. You can click to hear the change you made."),
-    shiny::tags$li("At any point, whichever sound that is playing will be indicated with an orange glow."),
-    shiny::tags$li("Your task is to fine-tune", shiny::tags$strong("Your Sound"),
-                   "to match the", shiny::tags$strong("Target Sound.")),
-    shiny::br(),
-    shiny::tags$img(
-      src = paste0(image, "instruction1.png"),
-      height = 110,
-      width = 600
-    ),
-  ),
-  button_text = "I Get It"
-)
-
-instruct2 <- psychTestR::one_button_page(
-  shiny::div(
-    shiny::tags$h3("Instructions"),
-    shiny::hr(),
-    shiny::tags$li("The test is divided into 3 Blocks with 6 trials per Block"),
-    shiny::tags$li("Moving the slider will change the sound differently in each Block"),
-    shiny::tags$li("There will be a practice trial before each Block for you to become familiar with what the slider does"),
-    shiny::br(),
-    shiny::tags$img(
-      src = paste0(image, "instruction2.png"),
-      height = 120,
-      width = 450
-    ),
-    shiny::hr(),
-    shiny::p("If you find any of this confusing, don't worry we got you covered."),
-    shiny::p("In the next page, you'll have the chance to play around with the controls."),
-  ),
-  button_text = "Begin Practice Trial"
-)
-
-instructions <- psychTestR::join(landing, volumeCheck, playback, instruct1, instruct2)

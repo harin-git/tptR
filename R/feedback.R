@@ -1,3 +1,21 @@
+#' Feedback page
+#' @param dict The psychTestR dictionary used for internationalisation.
+#' @export
+feedback <- function(dict = tptR::TPT_dict){
+  psychTestR::new_timeline(
+    psychTestR::reactive_page(function(state, ...){
+      score <- psychTestR::get_local("tpt_general_score", state)
+      psychTestR::one_button_page(shiny::div(
+        shiny::p(psychTestR::i18n("FEEDBACK_ITEM1")),
+        shiny::p(psychTestR::i18n("FEEDBACK_ITEM2")),
+        shiny::p(feed_plot(score))
+      ))
+    })
+    , dict = dict)
+}
+
+
+
 # This function transforms raw participant score to bin scores
 bin_transform <- function(participant_abs_dist, target_value){
   max.dist <- NULL
@@ -76,14 +94,4 @@ score_calculation <-  psychTestR::code_block(function(state, ...) {
   psychTestR::save_result(state, "tpt_general_score", general_score)
 })
 
-feedback <- psychTestR::join(
-  psychTestR::reactive_page(function(state, ...){
-    score <- psychTestR::get_local("tpt_general_score", state)
-    psychTestR::one_button_page(shiny::div(
-      shiny::p("Well done for completing the test!"),
-      shiny::p("Below is your estimated score out of 100"),
-      shiny::p(feed_plot(score))
-    ))
-  }
-  ))
 

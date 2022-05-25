@@ -4,7 +4,7 @@
 \alias{makeDemoPage}
 \title{Makes demo practice trials}
 \usage{
-makeDemoPage(blockName, trialName, targetValue)
+makeDemoPage(blockName, trialName, targetValue, dict = tptR::TPT_dict)
 }
 \arguments{
 \item{blockName}{name of the block to be displayed e.g. Block1}
@@ -12,6 +12,8 @@ makeDemoPage(blockName, trialName, targetValue)
 \item{trialName}{name of audio file prefix. If file is called 'env_13.mp3', 'env' is the trialName}
 
 \item{targetValue}{the value of sampled slider position. If file is called 'env_13.mp3', '13' is the targetValue}
+
+\item{dict}{The psychTestR dictionary used for internationalisation.}
 }
 \description{
 This assigns where the target value (i.e. correct slider position) should be in a given

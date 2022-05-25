@@ -4,12 +4,14 @@
 \alias{makeTestPage}
 \title{Make real testing trials}
 \usage{
-makeTestPage(trialName, blockName)
+makeTestPage(trialName, blockName, dict = tptR::TPT_dict)
 }
 \arguments{
 \item{trialName}{trial items to be sourced. Eg, env1, env2, ... env6}
 
 \item{blockName}{block name to be displayed to participant. Eg, Block1}
+
+\item{dict}{The psychTestR dictionary used for internationalisation.}
 }
 \description{
 Make real testing trials
