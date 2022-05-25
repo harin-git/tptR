@@ -1,6 +1,5 @@
 #' Feedback page
 #' @param dict The psychTestR dictionary used for internationalisation.
-#' @export
 feedback <- function(dict = tptR::TPT_dict){
   psychTestR::new_timeline(
     psychTestR::reactive_page(function(state, ...){

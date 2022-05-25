@@ -7,6 +7,8 @@
 #' Defaults to TRUE
 #' @param with_training (Boolean scalar) Defines whether instructions and training are included.
 #' Defaults to TRUE.
+#' @param with_welcome (Boolean scalar) Defines whether welcome page will be shown at beginning of the test.
+#' Defaults to TRUE.
 #' @param admin_password (Scalar character) Password for accessing the admin panel.
 #' @param researcher_email (Scalar character)
 #' If not \code{NULL}, this researcher's email address is displayed
@@ -29,23 +31,11 @@ TPT_standalone <- function(title = NULL,
                            with_welcome = TRUE,
                            admin_password = "conifer",
                            researcher_email = "longgold@gold.uc.ak",
-                           languages = c("en", "de", "de_f", "it"),
+                           languages = c("en", "de", "de_f"),
                            dict = tptR::TPT_dict,
                            with_id = FALSE,
                            validate_id = "auto",
                            ...) {
-
-  if(with_welcome == FALSE){
-    welcome <- NULL
-  } else {
-    welcome <- tptR::instructions(with_volume_headphone_check = FALSE, dict = dict)
-  }
-
-  if(with_feedback == FALSE){
-    feed <- NULL
-  } else {
-    feed <- tptR::feedback(dict = dict)
-  }
 
   elt <- psychTestR::join(
     if(with_id) psychTestR::new_timeline(
@@ -54,20 +44,21 @@ TPT_standalone <- function(title = NULL,
                            validate = validate_id),
       dict = dict
     ),
-    welcome,
-    envBlock(with_training = with_training, dict = dict),
-    fluxBlock(with_training = with_training, dict = dict),
-    centBlock(with_training = with_training, dict = dict),
-    score_calculation,
-    feed,
-    psychTestR::elt_save_results_to_disk(complete = TRUE),
+    TPT(with_welcome = with_welcome, with_training = with_training, with_feedback = with_feedback),
     psychTestR::new_timeline(
       psychTestR::final_page(shiny::p(
         psychTestR::i18n("RESULTS_SAVED"),
         psychTestR::i18n("CLOSE_BROWSER"))
       ), dict = dict)
   )
-
+  if(is.null(title)){
+    title <-
+      unlist(stats::setNames(
+        purrr::map(tptR::TPT_languages(), function(x)
+          tptR::TPT_dict$translate("TESTNAME", x)),
+        tptR::TPT_languages()
+      ))
+  }
   psychTestR::make_test(elts = elt,
                         opt = psychTestR::test_options(title = title,
                                                        admin_password = admin_password,

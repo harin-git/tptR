@@ -3,7 +3,6 @@
 #' @param with_volume_headphone_check page asking to calibrate volume and
 #' a question about audio output device. Default is \code{FALSE}
 #' @param dict The psychTestR dictionary used for internationalisation.
-#' @export
 instructions <- function(with_volume_headphone_check = FALSE,
                          dict = tptR::TPT_dict){
 

@@ -1,4 +1,5 @@
 #' This is the CSS styler for the clickable buttons
+#' @export
 button_style <- shiny::tags$style(
   ".button {
     display: inline-block;

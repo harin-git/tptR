@@ -11,7 +11,7 @@ TPT_standalone(
   with_welcome = TRUE,
   admin_password = "conifer",
   researcher_email = "longgold@gold.uc.ak",
-  languages = c("en", "de", "de_f", "it"),
+  languages = c("en", "de", "de_f"),
   dict = tptR::TPT_dict,
   with_id = FALSE,
   validate_id = "auto",
@@ -25,6 +25,9 @@ TPT_standalone(
 Defaults to TRUE}
 
 \item{with_training}{(Boolean scalar) Defines whether instructions and training are included.
+Defaults to TRUE.}
+
+\item{with_welcome}{(Boolean scalar) Defines whether welcome page will be shown at beginning of the test.
 Defaults to TRUE.}
 
 \item{admin_password}{(Scalar character) Password for accessing the admin panel.}

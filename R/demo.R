@@ -28,7 +28,7 @@ TPT_demo <- function(take_training = TRUE,
                      feedback = TRUE) {
 
   demo_pages <- psychTestR::join(
-    tptR::instructions(with_volume_headphone_check = TRUE),
+    instructions(with_volume_headphone_check = TRUE),
     psychTestR::new_timeline(psychTestR::one_button_page(
       shiny::div(
         shiny::tags$h3(psychTestR::i18n("DEMO_HEADER")),
