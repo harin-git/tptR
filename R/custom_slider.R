@@ -1,6 +1,7 @@
 #' This custom script for moveable slider that records slider position
 #' @param trialName If file is called 'env_13.mp3', 'env' is the trialName and the function maps
 #' slider values from 0 to 100. Eg, env_01, env_02, env_03...
+#' @export
 sliderJS <- function(trialName) {
   shiny::HTML(
     sprintf(

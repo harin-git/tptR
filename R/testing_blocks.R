@@ -1,16 +1,3 @@
-#' all three testing blocks that join demo and real sessions
-
-#page_after_block <- purrr::map(c(
-#    psychTestR::i18n("AFTER_BLOCK1"),
-#    psychTestR::i18n("AFTER_BLOCK2"),
-#    psychTestR::i18n("AFTER_BLOCK3")
-#  ),
-#  function(x){
-#    psychTestR::new_timeline(psychTestR::one_button_page(x),
-#                             dict = tptR::TPT_dict)
-#  }
-#)
-
 # Envelope
 envBlock <- function(with_training = TRUE, dict = tptR::TPT_dict){
   if(with_training == TRUE){
@@ -31,7 +18,7 @@ envBlock <- function(with_training = TRUE, dict = tptR::TPT_dict){
     demo,
     psychTestR::randomise_at_run_time("env_order", logic = envItems),
     psychTestR::new_timeline(psychTestR::one_button_page(psychTestR::i18n("AFTER_BLOCK1")),
-                             dict = tptR::TPT_dict)
+                             dict = dict)
   )
 
   return(out)
@@ -59,7 +46,7 @@ fluxBlock <- function(with_training = TRUE, dict = tptR::TPT_dict){
     demo,
     psychTestR::randomise_at_run_time("flux_order", logic = fluxItems),
     psychTestR::new_timeline(psychTestR::one_button_page(psychTestR::i18n("AFTER_BLOCK2")),
-                             dict = tptR::TPT_dict)
+                             dict = dict)
   )
 
   return(out)
@@ -86,7 +73,7 @@ centBlock <- function(with_training = TRUE, dict = tptR::TPT_dict){
     demo,
     psychTestR::randomise_at_run_time("cent_order", logic = centItems),
     psychTestR::new_timeline(psychTestR::one_button_page(psychTestR::i18n("AFTER_BLOCK3")),
-                             dict = tptR::TPT_dict)
+                             dict = dict)
   )
 
   return(out)
