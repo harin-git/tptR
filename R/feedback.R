@@ -56,41 +56,45 @@ feed_plot <- function(score){
 }
 
 # this calculates scores for each block and saves to results
-score_calculation <-  psychTestR::code_block(function(state, ...) {
-  trial_names <- c(paste0("env", 1:6), paste0("flux", 1:6), paste0("cent", 1:6))
-  new_target_values <- c(78, 22, 6, 62, 38, 94, 38, 62, 94, 78, 22, 6, 22, 78, 38, 6, 94, 62)
+score_calculation <-  function(){
 
-  response <- purrr::map_dbl(trial_names, psychTestR::get_local, state)
+  psychTestR::code_block(function(state, ...) {
+    trial_names <- c(paste0("env", 1:6), paste0("flux", 1:6), paste0("cent", 1:6))
+    new_target_values <- c(78, 22, 6, 62, 38, 94, 38, 62, 94, 78, 22, 6, 22, 78, 38, 6, 94, 62)
 
-  participant_distance_score <- abs(response - new_target_values)
+    response <- purrr::map_dbl(trial_names, psychTestR::get_local, state)
 
-  bin_transformed <- bin_transform(
-    participant_distance_score,
-    new_target_values
-  ) # transforms participants response to bin scores of 0 ~ 5
+    participant_distance_score <- abs(response - new_target_values)
 
-  # calculate mean bin scores
-  env_mean <- mean(bin_transformed[1:6])
-  flux_mean <- mean(bin_transformed[7:12])
-  cent_mean <- mean(bin_transformed[13:18])
-  general_mean <- mean(bin_transformed)
-  general_score <- signif(general_mean/5*100, 3)
+    bin_transformed <- bin_transform(
+      participant_distance_score,
+      new_target_values
+    ) # transforms participants response to bin scores of 0 ~ 5
+    scores <- list()
+    # calculate mean bin scores
+    env_mean <- mean(bin_transformed[1:6])
+    flux_mean <- mean(bin_transformed[7:12])
+    cent_mean <- mean(bin_transformed[13:18])
+    general_mean <- mean(bin_transformed)
+    general_score <- signif(general_mean/5*100, 3)
 
-  for (i in 1:length(trial_names)) {
-    psychTestR::save_result(state, paste0("abs_", trial_names[i]), participant_distance_score[i])
-  } # save absolute distance scores with a prefix 'abs_'
+    for (i in 1:length(trial_names)) {
+      scores[[paste0("abs_", trial_names[i])]] <- participant_distance_score[i]
+    } # save absolute distance scores with a prefix 'abs_'
 
-  for (i in 1:length(trial_names)) {
-    psychTestR::save_result(state, paste0("bin_", trial_names[i]), bin_transformed[i])
-  } # save bin scores with a prefix 'bin_'
+    for (i in 1:length(trial_names)) {
+      scores[[paste0("bin_", trial_names[i])]] <- bin_transformed[i]
+    } # save bin scores with a prefix 'bin_'
 
-  # save mean bin scores for each block & across blocks
-  psychTestR::save_result(state, "tpt_env_score", signif(env_mean/5*100, 3))
-  psychTestR::save_result(state, "tpt_flux_score", signif(flux_mean/5*100, 3))
-  psychTestR::save_result(state, "tpt_cent_score", signif(cent_mean/5*100, 3))
+    # save mean bin scores for each block & across blocks
+    scores[["env_score"]]  <- signif(env_mean/5*100, 3)
+    scores[["flux_score"]] <- signif(flux_mean/5*100, 3)
+    scores[["cent_score"]] <- signif(cent_mean/5*100, 3)
 
-  psychTestR::set_local("tpt_general_score", general_score, state)
-  psychTestR::save_result(state, "tpt_general_score", general_score)
-})
+    psychTestR::set_local("tpt_general_score", general_score, state)
+    scores[["general_score"]] <- general_score
+    lapply(names(scores), function(n) psychTestR::save_result(state, label = n, value = scores[[n]]))
+  })
+}
 
 

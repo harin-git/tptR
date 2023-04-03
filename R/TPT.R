@@ -21,13 +21,15 @@ TPT <- function(label = "TPT",
 
 
   psychTestR::join(
+    psychTestR::begin_module(label),
     if(with_welcome) instructions(with_volume_headphone_check = FALSE, dict = dict),
     envBlock(with_training = with_training, dict = dict),
     fluxBlock(with_training = with_training, dict = dict),
     centBlock(with_training = with_training, dict = dict),
-    score_calculation,
+    score_calculation(),
     if(with_feedback) feedback(dict = dict),
-    psychTestR::elt_save_results_to_disk(complete = TRUE)
+    psychTestR::elt_save_results_to_disk(complete = TRUE),
+    psychTestR::end_module()
   )
 
 }

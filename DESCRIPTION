@@ -1,7 +1,7 @@
 Package: tptR
 Type: Package
 Title: Timbre Perception Test (TPT)
-Version: 0.1.0
+Version: 0.1.1
 Author: Harin Lee
 Maintainer: Harin Lee <hlee@cbs.mpg.de>
 Description: Online implementation of the Timbre Perception Test (TPT) developed by Harin Lee & Daniel Müllensiefen. 
@@ -16,6 +16,6 @@ Imports:
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
